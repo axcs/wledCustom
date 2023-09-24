@@ -22,13 +22,21 @@ jobs:
       run: |
         rm -rf /tmp/WLEDtemp/* || true
         mkdir -p /tmp/WLEDtemp
-        wget https://github.com/Aircoookie/WLED/archive/refs/heads/main.zip -O /tmp/WLEDtemp/mm.zip
+        wget https://github.com/Aircoookie/WLED/archive/refs/heads/new-settings.zip -O /tmp/WLEDtemp/mm.zip
         unzip /tmp/WLEDtemp/mm.zip -d /tmp/WLEDtemp
         find /tmp/WLEDtemp -maxdepth 1 -mindepth 1 -name "*" -type d >> /tmp/WLEDtemp/wledfoldername
         cd `cat /tmp/WLEDtemp/wledfoldername`
-        echo '[env:custom_build]' >>platformio.ini
-        echo 'extends = env:d1_mini' >>platformio.ini
-        echo 'build_flags = ${env:d1_mini.build_flags} -D USERMOD_AUTO_SAVE' >>platformio.ini
+        echo '[env:d1_mini]' >>platformio.ini
+        echo 'board = d1_mini' >>platformio.ini
+        echo 'platform = ${common.platform_wled_default}' >>platformio.ini
+        echo 'platform_packages = ${common.platform_packages}' >>platformio.ini
+        echo 'upload_speed = 921600' >>platformio.ini
+        echo 'board_build.ldscript = ${common.ldscript_4m1m}' >>platformio.ini
+        echo 'build_unflags = ${common.build_unflags}' >>platformio.ini
+        echo 'build_flags = ${common.build_flags_esp8266}' >>platformio.ini
+        echo '     -D USERMOD_AUTO_SAVE ' >>platformio.ini
+        echo 'lib_deps = ${esp8266.lib_deps}' >>platformio.ini
+        echo 'monitor_filters = esp8266_exception_decod' >>platformio.ini
         
         pio run -e custom_build || pio run -e custom_build
     - name: Copy Files
